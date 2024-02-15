@@ -5,7 +5,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using PactNet;
 using PactNet.Infrastructure.Outputters;
-using PactNet.Native;
+using PactNet.Verifier;
 using tests.XUnitHelpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -41,13 +41,17 @@ namespace tests
                 _webHost.Start();
 
                 //Act / Assert
-                IPactVerifier pactVerifier = new PactVerifier(config);
+                using var pactVerifier = new PactVerifier(config);
                 var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "..", "pacts", "ApiClient-ProductService.json"));
-                pactVerifier.FromPactFile(pactFile)
+                pactVerifier.ServiceProvider("ProductService", new Uri(_pactServiceUri))
+                    .WithFileSource(pactFile)
                     .WithProviderStateUrl(new Uri($"{_pactServiceUri}/provider-states"))
-                    .ServiceProvider("ProductService", new Uri(_pactServiceUri))
-                    .HonoursPactWith("ApiClient")
                     .Verify();
+                //pactVerifier.FromPactFile(pactFile)
+                //    .WithProviderStateUrl(new Uri($"{_pactServiceUri}/provider-states"))
+                //    .ServiceProvider("ProductService", new Uri(_pactServiceUri))
+                //    .HonoursPactWith("ApiClient")
+                //    .Verify();
             }
         }
     }

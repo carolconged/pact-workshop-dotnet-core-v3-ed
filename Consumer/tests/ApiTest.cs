@@ -1,6 +1,5 @@
 using System.IO;
 using PactNet;
-using PactNet.Native;
 using Xunit.Abstractions;
 using Xunit;
 using System.Net.Http;
@@ -31,7 +30,7 @@ namespace tests
             var Config = new PactConfig
             {
                 PactDir = Path.Join("..", "..", "..", "..", "..", "pacts"),
-                LogDir = "pact_logs",
+                //LogDir = "pact_logs",
                 Outputters = new[] { new XUnitOutput(output) },
                 DefaultJsonSettings = new JsonSerializerSettings
                 {
@@ -67,7 +66,7 @@ namespace tests
             // Arange
             pact.UponReceiving("A valid request for a product")
                     .Given("product with ID 10 exists")
-                    .WithRequest(HttpMethod.Get, "/api/product/10")
+                    .WithRequest(HttpMethod.Get, "/api/products/10")
                 .WillRespond()
                     .WithStatus(HttpStatusCode.OK)
                     .WithHeader("Content-Type", "application/json; charset=utf-8")
